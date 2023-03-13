@@ -1,21 +1,32 @@
 import { createQR, encodeURL, TransactionRequestURLFields } from '@solana/pay'
+import { Transaction } from '@solana/web3.js'
+
+type TransactionState = {
+  state: "init" | "requested" | "timeout" | "confirmed" | "finalized",
+  err?: string | null,
+  signature?: string
+}
+
 
 export default class CrossPayClient {
   static pollingInterval = 1000
 
-  loginCallback: (public_key: string) => void | undefined
+  loginCallback: ((public_key: string) => void) | undefined
   loginSessionId: string | undefined
-  transactionSessionIds: string[]
+  transactionSessions: { [index: string]: any }
+  host: string
 
   constructor(host : string) {
     this.host = host
 
-    this.transactionSessionIds = []
+    this.loginCallback = undefined
+
+    this.transactionSessions = {}
 
     setInterval(() => this.poll().then(null, console.error), CrossPayClient.pollingInterval)
   }
 
-  async newLoginSession(loginCallback) {
+  async newLoginSession(loginCallback: (public_key: string) => void) {
 
     const responseRaw = await fetch(this.host + '/login_session', {
       method: 'POST',
@@ -53,6 +64,50 @@ export default class CrossPayClient {
     return loginQr
   }
 
+  async newTransactionSession(transaction: Transaction, stateCallback: (state: TransactionState) => void): Promise<string> {
+
+    const serializedTx = transaction.serialize({requireAllSignatures: false}).toString('base64')
+
+    const responseRaw = await fetch(this.host + '/transaction_session', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({'transaction': serializedTx})
+    })
+
+    const response = await responseRaw.json()
+
+    console.log(response)
+
+    this.transactionSessions[response.transaction_session_id] = {
+      stateCallback: stateCallback,
+      state: { state: "init" } as TransactionState
+    }
+
+    return response.transaction_session_id
+  }
+
+  getTransactionQr(txSessionId: string) {
+    if(!(txSessionId in this.transactionSessions))
+      throw new Error("Invalid transaction session id")
+    
+    const url = `${this.host}/get_transaction?transaction_session_id=${txSessionId}`
+
+    const urlFields: TransactionRequestURLFields = {
+      link: new URL(url),
+    }
+
+    const txUrl = encodeURL(urlFields)
+
+    console.log(txUrl)
+    
+    const txQr = createQR(txUrl, 400, 'transparent')
+
+    return txQr
+  }
+
   async poll() {
 
     // There is an active login session going on
@@ -79,5 +134,41 @@ export default class CrossPayClient {
 
       }
     }
+    
+    for(const txSessionId in this.transactionSessions) {
+      const txSession = this.transactionSessions[txSessionId]
+      if(txSession.state.state == "finalized")
+        continue
+      
+      console.log(`Poll transaction session ${txSessionId}...`)
+
+      const responseRaw = await fetch(`${this.host}/transaction_session?transaction_session_id=${txSessionId}`)
+
+      if (!responseRaw.ok) {
+        console.log("Request failed")
+      } else {
+        const response = await responseRaw.json()
+        console.log(response)
+
+        // TODO: update state
+      }
+    }
   }
 }
+
+/*
+  // Client: SDK serializes it
+  const serializedTx = tx.serialize({requireAllSignatures: false}).toString('base64')
+
+  console.log("Transaction:", serializedTx)
+
+  const result = await fetch("http://localhost:3001/transaction_session", {
+    method: 'POST',
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({'transaction': serializedTx})
+  })
+
+  console.log(await result.json())
+*/
