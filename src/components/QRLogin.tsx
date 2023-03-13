@@ -14,7 +14,6 @@ type Props = Readonly<{
 export default function QRLogin({ setAccount }: Props) {
 
   const loginQrRef = useRef<HTMLDivElement>(null)
-  console.log(loginQrRef.current)
 
   const loginSessionCreated = useRef(false)
 
