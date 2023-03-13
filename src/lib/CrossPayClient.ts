@@ -149,26 +149,11 @@ export default class CrossPayClient {
       } else {
         const response = await responseRaw.json()
         console.log(response)
+        
+        Object.assign(this.transactionSessions[txSessionId], response['state'])
 
-        // TODO: update state
+        console.log(this.transactionSessions[txSessionId])
       }
     }
   }
 }
-
-/*
-  // Client: SDK serializes it
-  const serializedTx = tx.serialize({requireAllSignatures: false}).toString('base64')
-
-  console.log("Transaction:", serializedTx)
-
-  const result = await fetch("http://localhost:3001/transaction_session", {
-    method: 'POST',
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({'transaction': serializedTx})
-  })
-
-  console.log(await result.json())
-*/
