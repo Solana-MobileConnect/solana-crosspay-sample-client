@@ -27,7 +27,10 @@ export default function QRLogin({ setAccount }: Props) {
     }
     
     (async () => {
-      await client.newLoginSession()
+      await client.newLoginSession(public_key => {
+        console.log("Logged in:", public_key)
+        setAccount(public_key)
+      })
     
       const loginQr = client.getLoginQr()
 

@@ -3,6 +3,7 @@ import { createQR, encodeURL, TransactionRequestURLFields } from '@solana/pay'
 export default class CrossPayClient {
   static pollingInterval = 1000
 
+  loginCallback: (public_key: string) => void | undefined
   loginSessionId: string | undefined
   transactionSessionIds: string[]
 
@@ -11,10 +12,10 @@ export default class CrossPayClient {
 
     this.transactionSessionIds = []
 
-    setInterval(() => this.poll(), CrossPayClient.pollingInterval)
+    setInterval(() => this.poll().then(null, console.error), CrossPayClient.pollingInterval)
   }
 
-  async newLoginSession() {
+  async newLoginSession(loginCallback) {
 
     const responseRaw = await fetch(this.host + '/login_session', {
       method: 'POST',
@@ -28,6 +29,7 @@ export default class CrossPayClient {
     console.log(response)
     
     this.loginSessionId = response.login_session_id
+    this.loginCallback = loginCallback
 
   }
 
@@ -51,6 +53,31 @@ export default class CrossPayClient {
     return loginQr
   }
 
-  poll() {
+  async poll() {
+
+    // There is an active login session going on
+    if(this.loginSessionId) {
+
+      console.log("Poll login session...")
+
+      const responseRaw = await fetch(`${this.host}/login_session?login_session_id=${this.loginSessionId}`)
+
+      if (!responseRaw.ok) {
+        console.log("Request failed")
+      } else {
+        const response = await responseRaw.json()
+        console.log(response)
+
+        if (response['state'] == 'set') {
+          console.log("Logged in as:", response['public_key'])
+
+          this.loginCallback(response['public_key'])
+
+          this.loginCallback = undefined
+          this.loginSessionId = undefined
+        }
+
+      }
+    }
   }
 }
