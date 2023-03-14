@@ -47,9 +47,15 @@ export default function QRTransaction({ account }: Props) {
 
       const txSessionId = await client.newTransactionSession(tx, state => {
         console.log("TX state:", state)
+
         setTxState(state['state'])
+
         if('signature' in state) {
           setTxSig(state['signature'])
+        }
+        
+        if('err' in state && state['err'] != null) {
+          console.log("Transaction error:", state['err'])
         }
       })
     

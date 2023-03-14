@@ -4,22 +4,23 @@ import { Transaction } from '@solana/web3.js'
 type TransactionState = {
   state: "init" | "requested" | "timeout" | "confirmed" | "finalized",
   err?: string | null,
-  signature?: string
+  signature?: string,
+  stateCallback?: any
 }
 
 
 export default class CrossPayClient {
   static pollingInterval = 2000
 
-  loginCallback: ((public_key: string) => void) | undefined
+  loginCallback: (public_key: string) => void
   loginSessionId: string | undefined
-  transactionSessions: { [index: string]: any }
+  transactionSessions: { [index: string]: TransactionState }
   host: string
 
   constructor(host : string) {
     this.host = host
 
-    this.loginCallback = undefined
+    this.loginCallback = x => {}
 
     this.transactionSessions = {}
 
@@ -82,9 +83,11 @@ export default class CrossPayClient {
     console.log(response)
 
     this.transactionSessions[response.transaction_session_id] = {
-      stateCallback: stateCallback,
-      state: { state: "init" } as TransactionState
+      state: "init",
+      stateCallback: stateCallback
     }
+
+    stateCallback(this.transactionSessions[response.transaction_session_id])
 
     return response.transaction_session_id
   }
@@ -128,7 +131,6 @@ export default class CrossPayClient {
 
           this.loginCallback(response['public_key'])
 
-          this.loginCallback = undefined
           this.loginSessionId = undefined
         }
 
