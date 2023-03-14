@@ -6,10 +6,10 @@ import QRTransaction from '../components/QRTransaction'
 
 export default function Home() {
 
-  //const [account, setAccount] = useState<string | undefined>(undefined)
+  const [account, setAccount] = useState<string | undefined>(undefined)
   
   // Testing
-  const [account, setAccount] = useState<string | undefined>('HDqxxSCNY5goEtFxMJqN7wkXKNMDfxAFiSXhQ1wcg2pV')
+  //const [account, setAccount] = useState<string | undefined>('HDqxxSCNY5goEtFxMJqN7wkXKNMDfxAFiSXhQ1wcg2pV')
 
   return (
     <>

@@ -9,7 +9,7 @@ type TransactionState = {
 
 
 export default class CrossPayClient {
-  static pollingInterval = 1000
+  static pollingInterval = 2000
 
   loginCallback: ((public_key: string) => void) | undefined
   loginSessionId: string | undefined
@@ -137,7 +137,7 @@ export default class CrossPayClient {
     
     for(const txSessionId in this.transactionSessions) {
       const txSession = this.transactionSessions[txSessionId]
-      if(txSession.state.state == "finalized")
+      if(txSession.state == "finalized")
         continue
       
       console.log(`Poll transaction session ${txSessionId}...`)
@@ -150,9 +150,11 @@ export default class CrossPayClient {
         const response = await responseRaw.json()
         console.log(response)
         
-        Object.assign(this.transactionSessions[txSessionId], response['state'])
+        Object.assign(this.transactionSessions[txSessionId], response)
 
         console.log(this.transactionSessions[txSessionId])
+
+        this.transactionSessions[txSessionId].stateCallback(this.transactionSessions[txSessionId])
       }
     }
   }

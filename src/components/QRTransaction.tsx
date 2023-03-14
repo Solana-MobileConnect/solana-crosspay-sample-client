@@ -16,6 +16,7 @@ export default function QRTransaction({ account }: Props) {
   const txQrRef = useRef<HTMLDivElement>(null)
 
   const [txSig, setTxSig] = useState<string | undefined>(undefined)
+  const [txState, setTxState] = useState<string | undefined>(undefined)
 
   const txSessionCreated = useRef(false)
 
@@ -46,6 +47,7 @@ export default function QRTransaction({ account }: Props) {
 
       const txSessionId = await client.newTransactionSession(tx, state => {
         console.log("TX state:", state)
+        setTxState(state['state'])
         if('signature' in state) {
           setTxSig(state['signature'])
         }
@@ -66,19 +68,13 @@ export default function QRTransaction({ account }: Props) {
       <div>
         Logged in as {account}
       </div>
-      {
-        !txSig ? 
-          <>
-            <div>
-              Scan this QR code to perform a transaction (send 0.01 SOL to a devnet account)
-            </div>
-            <div ref={txQrRef} />
-          </>
-          :
-          <div>
-            Transaction confirmed ✅: {txSig}
-          </div>
-      }
+
+      <div>
+        Scan this QR code to perform a transaction (send 0.01 SOL to a devnet account)
+      </div>
+      <div ref={txQrRef} />
+      <div>State of Transaction: {txState}</div>
+      <div>Transaction signature: {txSig}</div>
     </div>
   )
 }
