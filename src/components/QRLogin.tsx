@@ -42,8 +42,8 @@ export default function QRLogin({ setAccount }: Props) {
   }, [])
 
   return  (
-    <div>
-      <div>Scan QR code to log in</div>
+    <div id="main">
+      <p>Scan QR code to log in</p>
       <div ref={loginQrRef} />
     </div>
   )

@@ -60,7 +60,7 @@ export default class CrossPayClient {
 
     console.log(loginUrl)
     
-    const loginQr = createQR(loginUrl, 400, 'transparent')
+    const loginQr = createQR(loginUrl, 300, 'transparent')
 
     return loginQr
   }

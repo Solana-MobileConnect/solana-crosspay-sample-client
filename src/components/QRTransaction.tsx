@@ -70,17 +70,17 @@ export default function QRTransaction({ account }: Props) {
   }, [])
 
   return  (
-    <div>
-      <div>
-        Logged in as {account}
-      </div>
+    <div id="main">
+      <p>
+        Logged in as <b>{account}</b>
+      </p>
 
-      <div>
+      <p>
         Scan this QR code to perform a transaction (send 0.01 SOL to a devnet account)
-      </div>
+      </p>
       <div ref={txQrRef} />
-      <div>State of Transaction: {txState}</div>
-      <div>Transaction signature: {txSig}</div>
+      <p>State of Transaction: <b>{txState}</b></p>
+      <p>Transaction signature: <b>{txSig}</b></p>
     </div>
   )
 }
