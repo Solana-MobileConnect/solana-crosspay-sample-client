@@ -1,5 +1,5 @@
 import { useRef, useEffect, useState } from 'react'
-import { clusterApiUrl, Connection, Keypair, PublicKey, SystemProgram, LAMPORTS_PER_SOL, Transaction } from "@solana/web3.js"
+import { clusterApiUrl, Connection, Keypair, PublicKey, SystemProgram, LAMPORTS_PER_SOL, Transaction, TransactionInstruction } from "@solana/web3.js"
 
 import CrossPayClient from '../lib/CrossPayClient'
 
