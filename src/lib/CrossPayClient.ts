@@ -67,6 +67,8 @@ export default class CrossPayClient {
 
   async newTransactionSession(transaction: Transaction, stateCallback: (state: TransactionState) => void): Promise<string> {
 
+    console.log(transaction)
+
     const serializedTx = transaction.serialize({requireAllSignatures: false}).toString('base64')
 
     const responseRaw = await fetch(this.host + '/transaction_session', {
@@ -113,7 +115,7 @@ export default class CrossPayClient {
 
   async poll() {
 
-    // There is an active login session going on
+    // There is an active login session
     if(this.loginSessionId) {
 
       console.log("Poll login session...")
@@ -141,6 +143,8 @@ export default class CrossPayClient {
       const txSession = this.transactionSessions[txSessionId]
       if(txSession.state == "finalized")
         continue
+
+      // For each active tx session
       
       console.log(`Poll transaction session ${txSessionId}...`)
 

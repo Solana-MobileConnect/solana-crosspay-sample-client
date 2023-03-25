@@ -3,12 +3,15 @@ import { clusterApiUrl, Connection, Keypair, PublicKey, SystemProgram, LAMPORTS_
 
 import CrossPayClient from '../lib/CrossPayClient'
 
+import { v4 as uuid } from 'uuid'
+
 const RECEIVER_ACCOUNT = '77Dn6Xm3MjpUyyAh318WtHFvAcLSPrwUChLbpM2Ngnm3'
 
 type Props = Readonly<{
   account: string
 }>
 
+//const client = new CrossPayClient('http://localhost:3001')
 const client = new CrossPayClient('https://crosspay-server.onrender.com')
 
 export default function QRTransaction({ account }: Props) {
@@ -32,11 +35,21 @@ export default function QRTransaction({ account }: Props) {
 
       const connection = new Connection(clusterApiUrl('devnet'))
 
-      const tx = new Transaction().add(
+      const tx = new Transaction()
+
+      tx.add(
         SystemProgram.transfer({
           fromPubkey: new PublicKey(account),
           toPubkey: new PublicKey(RECEIVER_ACCOUNT),
           lamports: LAMPORTS_PER_SOL * 0.01
+        })
+      )
+
+      tx.add(
+        new TransactionInstruction({
+          programId: new PublicKey("MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr"),
+          keys: [],
+          data: Buffer.from(uuid(), 'utf-8')
         })
       )
 
