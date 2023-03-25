@@ -80,7 +80,7 @@ export default function QRTransaction({ account }: Props) {
       }
 
     })().then(null, console.error)
-  }, [])
+  }, [account])
 
   return  (
     <div id="main">

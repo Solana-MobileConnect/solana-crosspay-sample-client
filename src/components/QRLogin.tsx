@@ -39,7 +39,7 @@ export default function QRLogin({ setAccount }: Props) {
       }
 
     })().then(null, console.error)
-  }, [])
+  }, [setAccount])
 
   return  (
     <div id="main">
