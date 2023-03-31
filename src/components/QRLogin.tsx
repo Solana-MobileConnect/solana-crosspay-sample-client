@@ -43,8 +43,11 @@ export default function QRLogin({ setAccount }: Props) {
 
   return  (
     <div id="main">
-      <p>Scan QR code to log in</p>
-      <div ref={loginQrRef} />
+      <h1>CrossPay sample client</h1>
+      <p>On your mobile phone, open a wallet that supports Solana Pay (Phantom, Solflare, Glow etc.)</p>
+      <p style={{color: "red"}}>Switch to devnet</p>
+      <p>Scan the QR code below to log in:</p>
+      <div className="qr-code" ref={loginQrRef} />
     </div>
   )
 }

@@ -1,9 +1,16 @@
-p, div {
+p, h1, .qr-code {
   margin-bottom:20px;
-  font-family:Arial;
-  font-size:22pt
+}
+
+p {
+  font-size:22px
+}
+
+h1 {
+  font-size:40px;
 }
 
 #main{
-  margin:40px;
+  margin:20px;
+  font-family:Arial;
 }

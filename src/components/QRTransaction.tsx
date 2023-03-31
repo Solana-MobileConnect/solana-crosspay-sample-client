@@ -33,6 +33,7 @@ export default function QRTransaction({ account }: Props) {
     
     (async () => {
 
+      //const connection = new Connection(clusterApiUrl('mainnet'))
       const connection = new Connection(clusterApiUrl('devnet'))
 
       const tx = new Transaction()
@@ -41,7 +42,7 @@ export default function QRTransaction({ account }: Props) {
         SystemProgram.transfer({
           fromPubkey: new PublicKey(account),
           toPubkey: new PublicKey(RECEIVER_ACCOUNT),
-          lamports: LAMPORTS_PER_SOL * 0.01
+          lamports: LAMPORTS_PER_SOL * 0.001
         })
       )
 
@@ -84,16 +85,16 @@ export default function QRTransaction({ account }: Props) {
 
   return  (
     <div id="main">
+      <h1>CrossPay sample client</h1>
       <p>
-        Logged in as <b>{account}</b>
+        Logged in as <b>{account}</b>!
       </p>
-
       <p>
-        Scan this QR code to perform a transaction (send 0.01 SOL to a devnet account)
+        Scan this QR code to perform a transaction (send 0.001 SOL to a devnet account)
       </p>
-      <div ref={txQrRef} />
+      <div className="qr-code" ref={txQrRef} />
       <p>State of Transaction: <b>{txState}</b></p>
-      <p>Transaction signature: <b>{txSig}</b></p>
+      <p>Transaction signature: <b>{txSig ? txSig : "Waiting..."}</b></p>
     </div>
   )
 }

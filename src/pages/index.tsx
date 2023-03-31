@@ -14,7 +14,7 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>CrossPay Client</title>
+        <title>CrossPay sample client</title>
       </Head>
       {
         !account ?
