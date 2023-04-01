@@ -16,7 +16,7 @@ export default function QRLogin({ setAccount, network, setNetwork }: Props) {
 
   const loginSessionCreated = useRef(false)
 
-  const client = useRef(undefined)
+  const client = useRef(new CrossPayClient('https://crosspay-server.onrender.com', network))
 
   useEffect(() => {
 
@@ -50,7 +50,7 @@ export default function QRLogin({ setAccount, network, setNetwork }: Props) {
 
   }, [setAccount, network])
 
-  const switchNetwork = (event) => {
+  const switchNetwork = () => {
     loginSessionCreated.current = false
     setNetwork(network == 'devnet' ? 'mainnet-beta' : 'devnet')
   }

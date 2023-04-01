@@ -16,6 +16,7 @@ export default class CrossPayClient {
   loginSessionId: string | undefined
   transactionSessions: { [index: string]: TransactionState }
   host: string
+  cluster: string
 
   constructor(host : string, cluster: string) {
     this.host = host

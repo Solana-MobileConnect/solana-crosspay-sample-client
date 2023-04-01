@@ -10,7 +10,7 @@ const RECEIVER_ACCOUNT = '4Z9jDh3yJ8Grz2Y1BnQXQpj2RUA3zLTniM2hcsaqmhm6'
 type Props = Readonly<{
   account: string,
   network: string,
-  setAccount(account: string): void,
+  setAccount(account: string | undefined): void,
 }>
 
 export default function QRTransaction({ account, network, setAccount }: Props) {
