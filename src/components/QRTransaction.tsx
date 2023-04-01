@@ -34,8 +34,6 @@ export default function QRTransaction({ account, network, setAccount }: Props) {
     
     (async () => {
 
-      const connection = new Connection(clusterApiUrl(network as Cluster))
-
       const tx = new Transaction()
 
       tx.add(
@@ -56,8 +54,10 @@ export default function QRTransaction({ account, network, setAccount }: Props) {
 
       tx.feePayer = new PublicKey(account)
 
-      const latestBlockhash = await connection.getLatestBlockhash()
-      tx.recentBlockhash = latestBlockhash.blockhash
+      const response = await fetch(`/api/recent_blockhash?cluster=${network}`)
+      const blockhash = await response.text()
+      console.log("Blockhash:", blockhash)
+      tx.recentBlockhash = blockhash
 
       const txSessionId = await client.newTransactionSession(tx, state => {
         console.log("TX state:", state)
@@ -86,7 +86,7 @@ export default function QRTransaction({ account, network, setAccount }: Props) {
   return  (
     <div id="main">
       <h1>CrossPay sample client</h1>
-      <h1>Execute a transaction</h1>
+      <h2>Execute a transaction</h2>
       <p>
         Logged in as <b>{account}</b>!
       </p>
@@ -95,12 +95,14 @@ export default function QRTransaction({ account, network, setAccount }: Props) {
       <p>
         Scan this QR code to execute it
       </p>
-      <div className="qr-code" ref={txQrRef} />
+      <div className="qr-code" ref={txQrRef}>
+        Generating...
+      </div>
       <p>State of Transaction: <b>{txState}</b></p>
       <p>Transaction signature: <b>{txSig ? txSig : "Waiting..."}</b></p>
       {
         txSig &&
-        <p><a target="_blank" href={`https://explorer.solana.com/tx/${txSig}?cluster=devnet`}>View in Explorer</a></p>
+        <p><a target="_blank" href={`https://explorer.solana.com/tx/${txSig}?cluster=${network}`}>View in Explorer</a></p>
       }
       <p><a href="#" onClick={() => setAccount(undefined)}>Reset</a></p>
     </div>

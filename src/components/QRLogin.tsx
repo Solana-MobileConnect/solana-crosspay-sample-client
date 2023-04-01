@@ -20,7 +20,6 @@ export default function QRLogin({ setAccount, network, setNetwork }: Props) {
 
   useEffect(() => {
 
-
     if(loginSessionCreated.current) {
       return
     } else {
