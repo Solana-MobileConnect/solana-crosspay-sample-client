@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import Head from 'next/head'
 
 import QRLogin from '../components/QRLogin'
@@ -12,10 +12,10 @@ export default function Home() {
   // Testing
   //const [account, setAccount] = useState<string | undefined>('HDqxxSCNY5goEtFxMJqN7wkXKNMDfxAFiSXhQ1wcg2pV')
   
-  const baseReset = () => {
+  const baseReset = useCallback(() => {
     setAccount(undefined)
     setNetwork('devnet')
-  }
+  }, [setAccount, setNetwork])
 
   return (
     <>

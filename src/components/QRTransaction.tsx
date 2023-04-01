@@ -93,7 +93,7 @@ export default function QRTransaction({ account, network, setAccount, baseReset 
   const reset = useCallback(() => {
     client.current.close()
     baseReset()
-  }, [client])
+  }, [client, baseReset])
 
   return  (
     <div id="main">
