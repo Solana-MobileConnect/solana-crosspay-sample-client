@@ -11,6 +11,11 @@ export default function Home() {
   
   // Testing
   //const [account, setAccount] = useState<string | undefined>('HDqxxSCNY5goEtFxMJqN7wkXKNMDfxAFiSXhQ1wcg2pV')
+  
+  const baseReset = () => {
+    setAccount(undefined)
+    setNetwork('devnet')
+  }
 
   return (
     <>
@@ -20,7 +25,7 @@ export default function Home() {
       {
         !account ?
           <QRLogin setAccount={setAccount} network={network} setNetwork={setNetwork}/> :
-          <QRTransaction account={account} network={network} setAccount={setAccount}/> 
+          <QRTransaction account={account} network={network} setAccount={setAccount} baseReset={baseReset}/> 
       }
     </>
   )

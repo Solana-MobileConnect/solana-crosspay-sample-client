@@ -17,6 +17,7 @@ export default class CrossPayClient {
   transactionSessions: { [index: string]: TransactionState }
   host: string
   cluster: string
+  pollInterval: NodeJS.Timeout
 
   constructor(host : string, cluster: string) {
     this.host = host
@@ -27,7 +28,7 @@ export default class CrossPayClient {
 
     this.transactionSessions = {}
 
-    setInterval(() => this.poll().then(null, console.error), CrossPayClient.pollingInterval)
+    this.pollInterval = setInterval(() => this.poll().then(null, console.error), CrossPayClient.pollingInterval)
   }
 
   async newLoginSession(loginCallback: (public_key: string) => void) {
@@ -175,5 +176,7 @@ export default class CrossPayClient {
     // Stop polling
     this.loginSessionId = undefined
     this.transactionSessions = {}
+    
+    clearInterval(this.pollInterval)
   }
 }

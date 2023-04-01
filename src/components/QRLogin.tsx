@@ -29,9 +29,9 @@ export default function QRLogin({ setAccount, network, setNetwork }: Props) {
     if(client.current) {
       client.current.close()
     }
-
-    client.current = new CrossPayClient('https://crosspay-server.onrender.com', network);
     
+    client.current = new CrossPayClient('https://crosspay-server.onrender.com', network);
+
     (async () => {
 
       await client.current.newLoginSession(public_key => {

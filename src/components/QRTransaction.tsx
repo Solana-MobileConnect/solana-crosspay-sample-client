@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState } from 'react'
+import { useRef, useEffect, useState, useCallback } from 'react'
 import { clusterApiUrl, Connection, Keypair, PublicKey, SystemProgram, LAMPORTS_PER_SOL, Transaction, TransactionInstruction, Cluster } from "@solana/web3.js"
 
 import CrossPayClient from '../lib/CrossPayClient'
@@ -11,9 +11,10 @@ type Props = Readonly<{
   account: string,
   network: string,
   setAccount(account: string | undefined): void,
+  baseReset: any
 }>
 
-export default function QRTransaction({ account, network, setAccount }: Props) {
+export default function QRTransaction({ account, network, setAccount, baseReset }: Props) {
 
   const txQrRef = useRef<HTMLDivElement>(null)
 
@@ -21,6 +22,8 @@ export default function QRTransaction({ account, network, setAccount }: Props) {
   const [txState, setTxState] = useState<string | undefined>(undefined)
 
   const txSessionCreated = useRef(false)
+
+  const client = useRef(new CrossPayClient('https://crosspay-server.onrender.com', network))
 
   useEffect(() => {
 
@@ -30,7 +33,11 @@ export default function QRTransaction({ account, network, setAccount }: Props) {
       txSessionCreated.current = true
     }
 
-    const client = new CrossPayClient('https://crosspay-server.onrender.com', network as Cluster);
+    if(client.current) {
+      client.current.close()
+    }
+    
+    client.current = new CrossPayClient('https://crosspay-server.onrender.com', network);
     
     (async () => {
 
@@ -59,7 +66,7 @@ export default function QRTransaction({ account, network, setAccount }: Props) {
       console.log("Blockhash:", blockhash)
       tx.recentBlockhash = blockhash
 
-      const txSessionId = await client.newTransactionSession(tx, state => {
+      const txSessionId = await client.current.newTransactionSession(tx, state => {
         console.log("TX state:", state)
 
         setTxState(state['state'])
@@ -73,7 +80,7 @@ export default function QRTransaction({ account, network, setAccount }: Props) {
         }
       })
     
-      const txQr = client.getTransactionQr(txSessionId)
+      const txQr = client.current.getTransactionQr(txSessionId)
 
       if (txQrRef.current) {
         txQrRef.current.innerHTML = ''
@@ -81,7 +88,12 @@ export default function QRTransaction({ account, network, setAccount }: Props) {
       }
 
     })().then(null, console.error)
-  }, [account, network])
+  }, [account, network]);
+
+  const reset = useCallback(() => {
+    client.current.close()
+    baseReset()
+  }, [client])
 
   return  (
     <div id="main">
@@ -104,7 +116,7 @@ export default function QRTransaction({ account, network, setAccount }: Props) {
         txSig &&
         <p><a target="_blank" href={`https://explorer.solana.com/tx/${txSig}?cluster=${network}`}>View in Explorer</a></p>
       }
-      <p><a href="#" onClick={() => setAccount(undefined)}>Reset</a></p>
+      <p><a href="#" onClick={reset}>Reset</a></p>
     </div>
   )
 }
