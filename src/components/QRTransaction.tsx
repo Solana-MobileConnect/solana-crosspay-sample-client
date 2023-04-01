@@ -5,16 +5,18 @@ import CrossPayClient from '../lib/CrossPayClient'
 
 import { v4 as uuid } from 'uuid'
 
-const RECEIVER_ACCOUNT = '77Dn6Xm3MjpUyyAh318WtHFvAcLSPrwUChLbpM2Ngnm3'
+const RECEIVER_ACCOUNT = '4Z9jDh3yJ8Grz2Y1BnQXQpj2RUA3zLTniM2hcsaqmhm6'
 
 type Props = Readonly<{
-  account: string
+  account: string,
+  network: string,
+  setAccount(account: string): void,
 }>
 
 //const client = new CrossPayClient('http://localhost:3001')
 const client = new CrossPayClient('https://crosspay-server.onrender.com')
 
-export default function QRTransaction({ account }: Props) {
+export default function QRTransaction({ account, network, setAccount }: Props) {
 
   const txQrRef = useRef<HTMLDivElement>(null)
 
@@ -33,8 +35,7 @@ export default function QRTransaction({ account }: Props) {
     
     (async () => {
 
-      //const connection = new Connection(clusterApiUrl('mainnet'))
-      const connection = new Connection(clusterApiUrl('devnet'))
+      const connection = new Connection(clusterApiUrl(network))
 
       const tx = new Transaction()
 
@@ -81,20 +82,28 @@ export default function QRTransaction({ account }: Props) {
       }
 
     })().then(null, console.error)
-  }, [account])
+  }, [account, network])
 
   return  (
     <div id="main">
       <h1>CrossPay sample client</h1>
+      <h1>Execute a transaction</h1>
       <p>
         Logged in as <b>{account}</b>!
       </p>
+      <p>Network: <b>{network}</b></p>
+      <p>Transaction: <b>Send 0.001 SOL to {RECEIVER_ACCOUNT.slice(0,10) + "..."}</b></p>
       <p>
-        Scan this QR code to perform a transaction (send 0.001 SOL to a devnet account)
+        Scan this QR code to execute it
       </p>
       <div className="qr-code" ref={txQrRef} />
       <p>State of Transaction: <b>{txState}</b></p>
       <p>Transaction signature: <b>{txSig ? txSig : "Waiting..."}</b></p>
+      {
+        txSig &&
+        <p><a target="_blank" href={`https://explorer.solana.com/tx/${txSig}?cluster=devnet`}>View in Explorer</a></p>
+      }
+      <p><a href="#" onClick={() => setAccount(undefined)}>Reset</a></p>
     </div>
   )
 }

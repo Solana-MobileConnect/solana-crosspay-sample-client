@@ -7,6 +7,7 @@ import QRTransaction from '../components/QRTransaction'
 export default function Home() {
 
   const [account, setAccount] = useState<string | undefined>(undefined)
+  const [network, setNetwork] = useState<string>('devnet')
   
   // Testing
   //const [account, setAccount] = useState<string | undefined>('HDqxxSCNY5goEtFxMJqN7wkXKNMDfxAFiSXhQ1wcg2pV')
@@ -18,8 +19,8 @@ export default function Home() {
       </Head>
       {
         !account ?
-          <QRLogin setAccount={setAccount} /> :
-          <QRTransaction account={account} /> 
+          <QRLogin setAccount={setAccount} network={network} setNetwork={setNetwork}/> :
+          <QRTransaction account={account} network={network} setAccount={setAccount}/> 
       }
     </>
   )

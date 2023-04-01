@@ -17,8 +17,10 @@ export default class CrossPayClient {
   transactionSessions: { [index: string]: TransactionState }
   host: string
 
-  constructor(host : string) {
+  constructor(host : string, cluster: string) {
     this.host = host
+
+    this.cluster = cluster
 
     this.loginCallback = x => {}
 
@@ -33,7 +35,9 @@ export default class CrossPayClient {
       method: 'POST',
       headers: {
         'Accept': 'application/json'
-      }
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({'cluster': this.cluster})
     })
 
     const response = await responseRaw.json()
@@ -118,7 +122,7 @@ export default class CrossPayClient {
     // There is an active login session
     if(this.loginSessionId) {
 
-      console.log("Poll login session...")
+      console.log("Poll login session")
 
       const responseRaw = await fetch(`${this.host}/login_session?login_session_id=${this.loginSessionId}`)
 
@@ -146,7 +150,7 @@ export default class CrossPayClient {
 
       // For each active tx session
       
-      console.log(`Poll transaction session ${txSessionId}...`)
+      console.log(`Poll transaction session ${txSessionId}`)
 
       const responseRaw = await fetch(`${this.host}/transaction_session?transaction_session_id=${txSessionId}`)
 

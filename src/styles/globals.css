@@ -1,4 +1,4 @@
-p, h1, .qr-code {
+p, h1, h2, .qr-code {
   margin-bottom:20px;
 }
 
@@ -8,6 +8,10 @@ p {
 
 h1 {
   font-size:40px;
+}
+
+h2 {
+  font-size:30px;
 }
 
 #main{
