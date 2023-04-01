@@ -1,5 +1,5 @@
 import { useRef, useEffect, useState } from 'react'
-import { clusterApiUrl, Connection, Keypair, PublicKey, SystemProgram, LAMPORTS_PER_SOL, Transaction, TransactionInstruction } from "@solana/web3.js"
+import { clusterApiUrl, Connection, Keypair, PublicKey, SystemProgram, LAMPORTS_PER_SOL, Transaction, TransactionInstruction, Cluster } from "@solana/web3.js"
 
 import CrossPayClient from '../lib/CrossPayClient'
 
@@ -12,9 +12,6 @@ type Props = Readonly<{
   network: string,
   setAccount(account: string): void,
 }>
-
-//const client = new CrossPayClient('http://localhost:3001')
-const client = new CrossPayClient('https://crosspay-server.onrender.com')
 
 export default function QRTransaction({ account, network, setAccount }: Props) {
 
@@ -32,10 +29,12 @@ export default function QRTransaction({ account, network, setAccount }: Props) {
     } else {
       txSessionCreated.current = true
     }
+
+    const client = new CrossPayClient('https://crosspay-server.onrender.com', network as Cluster);
     
     (async () => {
 
-      const connection = new Connection(clusterApiUrl(network))
+      const connection = new Connection(clusterApiUrl(network as Cluster))
 
       const tx = new Transaction()
 

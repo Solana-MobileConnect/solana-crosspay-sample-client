@@ -34,7 +34,7 @@ export default class CrossPayClient {
     const responseRaw = await fetch(this.host + '/login_session', {
       method: 'POST',
       headers: {
-        'Accept': 'application/json'
+        'Accept': 'application/json',
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({'cluster': this.cluster})
@@ -81,7 +81,7 @@ export default class CrossPayClient {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({'transaction': serializedTx})
+      body: JSON.stringify({'transaction': serializedTx, 'cluster': this.cluster})
     })
 
     const response = await responseRaw.json()
@@ -167,5 +167,12 @@ export default class CrossPayClient {
         this.transactionSessions[txSessionId].stateCallback(this.transactionSessions[txSessionId])
       }
     }
+  }
+
+  close() {
+    console.log("Close client")
+    // Stop polling
+    this.loginSessionId = undefined
+    this.transactionSessions = {}
   }
 }
